@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
+import Login from "./pages/Login";
 
 export type CartItem = {
   id: number;
@@ -43,6 +44,7 @@ function App() {
         path="/cart"
         element={<Cart cart={cart} clearCart={clearCart} confirmCart={confirmCart} />}
       />
+      <Route path="/login" element={<Login />} />
     </Routes>
   );
 }
