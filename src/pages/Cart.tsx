@@ -69,41 +69,6 @@ const Cart = ({ cart, clearCart }: CartProps) => {
 
       <h1 className="text-3xl font-bold text-primary mb-8 border-b pb-4">Your Cart</h1>
 
-      {/* Success message for last confirmed order */}
-      {lastOrder && lastOrder.length > 0 && (
-        <div className="mb-6 bg-green-100 p-5 rounded-2xl border border-green-300 shadow">
-          <h2 className="text-green-800 font-bold text-xl mb-3 flex items-center gap-2">
-            Last Order Confirmed!
-          </h2>
-          <ul className="list-none list-inside text-green-700 ml-5">
-            {lastOrder.map((item) => (
-              <li key={item.id}>
-                {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Show all past orders except last one */}
-      {allOrders.length > 1 && (
-        <div className="mb-6">
-          <h2 className="text-primary font-bold text-xl mb-3">Previous Orders</h2>
-          {allOrders.slice(0, -1).map((order, idx) => (
-            <div key={idx} className="mb-3 bg-white p-4 rounded-2xl shadow">
-              <h3 className="font-semibold text-secondary mb-2">Order #{idx + 1}</h3>
-              <ul className="ml-5 text-gray-700">
-                {order.map((item) => (
-                  <li key={item.id}>
-                    {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Current cart items */}
       {cart.length === 0 ? (
         <p className="text-gray-600 text-lg">Your cart is empty.</p>
@@ -152,6 +117,43 @@ const Cart = ({ cart, clearCart }: CartProps) => {
           </div>
         </div>
       )}
+
+      {/* Success message for last confirmed order */}
+      {lastOrder && lastOrder.length > 0 && (
+        <div className="mb-6 mt-10 bg-green-100 p-5 rounded-2xl border border-green-300 shadow">
+          <h2 className="text-green-800 font-bold text-xl mb-3 flex items-center gap-2">
+            Last Order Confirmed!
+          </h2>
+          <ul className="list-none list-inside text-green-700 ml-5">
+            {lastOrder.map((item) => (
+              <li key={item.id}>
+                {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Show all past orders except last one */}
+      {allOrders.length > 1 && (
+        <div className="mb-6">
+          <h2 className="text-primary font-bold text-xl mb-3">Previous Orders</h2>
+          {allOrders.slice(0, -1).map((order, idx) => (
+            <div key={idx} className="mb-3 bg-white p-4 rounded-2xl shadow">
+              <h3 className="font-semibold text-secondary mb-2">Order #{idx + 1}</h3>
+              <ul className="ml-5 text-gray-700">
+                {order.map((item) => (
+                  <li key={item.id}>
+                    {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      
     </div>
   );
 };

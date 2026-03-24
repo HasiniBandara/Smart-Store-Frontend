@@ -51,6 +51,13 @@ const Products = ({ addToCart }: ProductsProps) => {
 
   // Single confirm order button
   const confirmOrder = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Please login to add products to cart!");
+      return;
+    }
+
     let hasItems = false;
     products.forEach((product) => {
       const quantity = cartCount[product.id] || 0;
@@ -98,6 +105,7 @@ const Products = ({ addToCart }: ProductsProps) => {
 
       {/* Single Confirm Order Button */}
       <div className="mt-6">
+
         <button
           onClick={confirmOrder}
           className="bg-green-500 text-white px-6 py-3 rounded text-lg"
