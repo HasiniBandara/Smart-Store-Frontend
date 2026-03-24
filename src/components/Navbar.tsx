@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+const token = localStorage.getItem("token");
+
   return (
     <div className="flex justify-between items-center px-10 py-5 text-light">
       
@@ -12,7 +14,23 @@ const Navbar = () => {
         <Link to="/cart">CART</Link>
       </div>
 
-      <div className="text-2xl"></div>
+      <div className="text-lg font-bold">
+        {!token ? (
+          <Link to="/login" className="text-blue-500">
+            Login
+          </Link>
+        ) : (
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.reload();
+            }}
+            className="text-red-500"
+          >
+            Logout
+          </button>
+        )}
+      </div>
     </div>
   );
 };
