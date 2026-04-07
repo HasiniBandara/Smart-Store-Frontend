@@ -1,20 +1,25 @@
 import type { CartItem } from "../App";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 interface CartProps {
   cart: CartItem[];
   clearCart: () => void;
+  confirmCart: () => void;
+  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; // ✅ ADD THIS
 }
 
-const Cart = ({ cart, clearCart }: CartProps) => {
+const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   // All past orders
   const [allOrders, setAllOrders] = useState<CartItem[][]>([]);
 
-  // Last confirmed order from current session (for success message)
+  // Last confirmed order from current session 
   const [lastOrder, setLastOrder] = useState<CartItem[] | null>(null);
 
-  // Load past orders from localStorage when component mounts
+  const navigate = useNavigate();
+
+  // Load past orders from localStorage 
   useEffect(() => {
     const savedOrders: CartItem[][] = JSON.parse(localStorage.getItem("orders") || "[]");
     if (savedOrders.length > 0) {
@@ -23,6 +28,20 @@ const Cart = ({ cart, clearCart }: CartProps) => {
     }
   }, []);
 
+  const updateQuantity = (id: number, newQty: number) => {
+    if (newQty < 0) return;
+
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: newQty } : item
+    );
+
+    // remove items with 0 quantity
+    const filtered = updatedCart.filter((item) => item.quantity > 0);
+
+    // update parent state (you need this prop)
+    setCart(filtered);
+  };
+
   const handleConfirm = async () => {
     if (cart.length === 0) {
       alert("Please select at least one product!");
@@ -30,6 +49,13 @@ const Cart = ({ cart, clearCart }: CartProps) => {
     }
 
     try {
+      // backend 
+      const reduceItems = cart.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+      }));
+
+      // frontend display 
       const orderItems = cart.map((item) => ({
         id: item.id,
         name: item.name,
@@ -37,11 +63,10 @@ const Cart = ({ cart, clearCart }: CartProps) => {
         quantity: item.quantity,
       }));
 
-      // Send request to backend to reduce stock
       await fetch("http://localhost:3000/products/reduce-stock", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderItems),
+        body: JSON.stringify({ items: reduceItems }),
       });
 
       // Save order in localStorage
@@ -49,11 +74,12 @@ const Cart = ({ cart, clearCart }: CartProps) => {
       savedOrders.push(orderItems);
       localStorage.setItem("orders", JSON.stringify(savedOrders));
 
-      // Update state
+      // Update UI
       setAllOrders(savedOrders);
       setLastOrder(orderItems);
 
-      // Clear cart for next order
+      navigate("/payment");
+
       clearCart();
     } catch (error) {
       console.error("Error confirming order:", error);
@@ -64,94 +90,108 @@ const Cart = ({ cart, clearCart }: CartProps) => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="bg-light min-h-screen font-main pl-10 pr-10">
+    <div className="bg-[#f5f0f2] min-h-screen px-10 font-main">
       <Navbar />
 
-      <h1 className="text-3xl font-bold text-primary mb-8 border-b pb-4">Your Cart</h1>
+      <h1 className="text-3xl font-bold text-primary text-center mb-8">
+        CART
+      </h1>
 
-      {/* Success message for last confirmed order */}
-      {lastOrder && lastOrder.length > 0 && (
-        <div className="mb-6 bg-green-100 p-5 rounded-2xl border border-green-300 shadow">
-          <h2 className="text-green-800 font-bold text-xl mb-3 flex items-center gap-2">
-            Last Order Confirmed!
-          </h2>
-          <ul className="list-none list-inside text-green-700 ml-5">
-            {lastOrder.map((item) => (
-              <li key={item.id}>
-                {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="bg-primary text-white rounded-2xl p-8 grid md:grid-cols-[2fr_1fr] gap-8">
 
-      {/* Show all past orders except last one */}
-      {allOrders.length > 1 && (
-        <div className="mb-6">
-          <h2 className="text-primary font-bold text-xl mb-3">Previous Orders</h2>
-          {allOrders.slice(0, -1).map((order, idx) => (
-            <div key={idx} className="mb-3 bg-white p-4 rounded-2xl shadow">
-              <h3 className="font-semibold text-secondary mb-2">Order #{idx + 1}</h3>
-              <ul className="ml-5 text-gray-700">
-                {order.map((item) => (
-                  <li key={item.id}>
-                    {item.name} - {item.quantity} × Rs. {item.price} = Rs. {item.price * item.quantity}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Current cart items */}
-      {cart.length === 0 ? (
-        <p className="text-gray-600 text-lg">Your cart is empty.</p>
-      ) : (
-        <div className="space-y-4">
-          {cart.map((item) => (
-            <div
-              key={item.id}
-              className="flex justify-between items-center bg-white p-4 rounded-2xl shadow hover:shadow-lg transition-shadow"
-            >
-              <div>
-                <h3 className="text-xl font-semibold text-primary">{item.name}</h3>
-                <p className="text-gray-600">
-                  Rs. {item.price} × {item.quantity}
-                </p>
+        {/* LEFT SIDE - CART ITEMS */}
+        <div>
+          {cart.length === 0 ? (
+            <p>Your cart is empty</p>
+          ) : (
+            <>
+              {/* Header Row (optional) */}
+              <div className="grid grid-cols-3 gap-4 font-bold mb-2 text-center">
+                <span></span>
+                <span></span>
+                <span className="ml-28">Total</span>
               </div>
-              <div className="text-lg font-bold text-secondary">
-                Rs. {item.price * item.quantity}
-              </div>
-            </div>
-          ))}
 
-          {/* Total & Buttons */}
-          <div className="mt-6 flex flex-col md:flex-row justify-between items-center bg-white p-4 rounded-2xl shadow text-lg font-bold">
-            <div className="mb-4 md:mb-0">
-              Total: <span className="text-green-600">Rs. {total}</span>
-            </div>
-            <div className="flex gap-4">
-              <button
-                onClick={clearCart}
-                className="bg-red-500 text-white px-5 py-2 rounded hover:bg-red-600 transition"
-              >
-                Clear Cart
-              </button>
-
-              {/* Confirm button only shows if cart has items */}
-              {cart.length > 0 && (
-                <button
-                  onClick={handleConfirm}
-                  className="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600 transition"
+              {/* Cart Items */}
+              {cart.map((item) => (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-[2fr_1fr_1fr] gap-4 items-center mb-4 mx-5"
                 >
-                  Confirm Order
-                </button>
-              )}
-            </div>
-          </div>
+                  {/* Column 1: Item info */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 bg-white rounded-lg" />
+
+                    <div>
+                      <p className="font-semibold">{item.name}</p>
+                      <p className="text-sm">Rs. {item.price}</p>
+                    </div>
+                  </div>
+
+                  {/* Column 2: Quantity controls */}
+                  <div className="flex items-center gap-2 bg-white text-primary py-1 rounded-full justify-center">
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                      className="font-bold px-2"
+                    >
+                      −
+                    </button>
+
+                    <span>{item.quantity}</span>
+
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      className="font-bold px-2"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  {/* Column 3: Total price */}
+                  <p className="font-semibold text-right">
+                    Rs. {item.price * item.quantity}
+                  </p>
+                </div>
+              ))}
+
+              {/* Subtotal */}
+              <div className="flex justify-between font-bold mt-6 pt-4 mx-4">
+                <span>Sub Total</span>
+                <span>Rs. {total}</span>
+              </div>
+            </>
+          )}
         </div>
-      )}
+
+        {/* RIGHT SIDE - PICKUP CARD */}
+        <div className="bg-white text-primary rounded-2xl p-6 shadow">
+          <button
+            onClick={handleConfirm}
+            className="w-full bg-green-600 text-white py-2 rounded-full mb-2"
+          >
+            Confirm Order
+          </button>
+
+          <button
+            onClick={clearCart}
+            className="w-full bg-red-800 text-white py-2 rounded-full"
+          >
+            Delete Order
+          </button>
+
+          {/* Previous Orders */}
+          {allOrders.length > 1 && (
+            <div className="mt-10 text-center">
+              <button
+                onClick={() => navigate("/orders")}
+                className="bg-primary text-white px-6 py-2 rounded-full shadow"
+              >
+                View Previous Orders
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

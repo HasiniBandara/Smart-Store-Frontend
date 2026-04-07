@@ -3,6 +3,9 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
+import Login from "./pages/Login";
+import Payment from "./pages/Payment";
+import Orders from "./pages/Orders";
 
 export type CartItem = {
   id: number;
@@ -26,6 +29,7 @@ function App() {
     });
   };
 
+
   const clearCart = () => setCart([]);
 
   const confirmCart = () => {
@@ -41,8 +45,19 @@ function App() {
       <Route path="/products" element={<Products addToCart={addToCart} />} />
       <Route
         path="/cart"
-        element={<Cart cart={cart} clearCart={clearCart} confirmCart={confirmCart} />}
+        element={
+          <Cart
+            cart={cart}
+            clearCart={clearCart}
+            confirmCart={confirmCart}
+            setCart={setCart}   // ✅ ADD THIS
+          />
+        }
       />
+      <Route path="/payment" element={<Payment />} />
+      <Route path="/orders" element={<Orders />} />
+      <Route path="/login" element={<Login />} />
+
     </Routes>
   );
 }
