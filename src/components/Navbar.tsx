@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   return (
     <div className="flex justify-between items-center px-10 py-5 text-light">
-      
+
       <h1 className="font-lily text-3xl font-bold">c & c</h1>
 
       <div className="bg-light text-primary px-6 py-2 rounded-full flex gap-6 font-poppins font-bold">
