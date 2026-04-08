@@ -54,7 +54,7 @@ function App() {
           />
         }
       />
-      <Route path="/payment" element={<Payment />} />
+      <Route path="/payment" element={<Payment cart={cart} />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/login" element={<Login />} />
 

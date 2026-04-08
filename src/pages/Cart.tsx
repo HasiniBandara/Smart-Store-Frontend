@@ -80,7 +80,6 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
 
       navigate("/payment");
 
-      clearCart();
     } catch (error) {
       console.error("Error confirming order:", error);
       alert("Failed to confirm order");

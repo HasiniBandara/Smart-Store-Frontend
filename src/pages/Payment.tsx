@@ -1,6 +1,20 @@
 import Navbar from "../components/Navbar";
+import { PayPalButtons } from "@paypal/react-paypal-js";
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Payment = () => {
+const Payment = ({ cart, setCart }: any) => {
+    const navigate = useNavigate();
+
+    // ✅ calculate total amount
+    const totalAmount = useMemo(() => {
+        return cart.reduce(
+            (sum: number, item: any) =>
+                sum + Number(item.price) * item.quantity,
+            0
+        );
+    }, [cart]);
+
     return (
         <div className="min-h-screen bg-[#f5f0f2] px-10">
             <Navbar />
@@ -10,13 +24,40 @@ const Payment = () => {
             </h1>
 
             <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
-                <h2 className="text-lg font-semibold mb-4">Select Payment Method</h2>
+                <h2 className="text-lg font-semibold mb-4">
+                    Total: Rs. {totalAmount}
+                </h2>
 
-                <button className="w-full bg-primary text-white py-2 rounded-full mb-3">
-                    Pay with Card
-                </button>
+                {/* ✅ PAYPAL BUTTON */}
+                <PayPalButtons
+                    style={{ layout: "vertical" }}
 
-                <button className="w-full border border-primary py-2 rounded-full">
+                    createOrder={(data, actions) => {
+                        return actions.order.create({
+                            intent: "CAPTURE", // ✅ REQUIRED
+
+                            purchase_units: [
+                                {
+                                    amount: {
+                                        currency_code: "USD", // ✅ REQUIRED
+                                        value: totalAmount.toString(), // ✅ MUST be string
+                                    },
+                                },
+                            ],
+                        });
+                    }}
+
+                    onApprove={(data, actions) => {
+                        return actions.order!.capture().then((details) => {
+                            alert("Payment successful 🎉");
+                            setCart([]); // ✅ Clear cart only after payment
+                            navigate("/success"); // ✅ Navigate to success page
+                        });
+                    }}
+                />
+
+                {/* OPTIONAL: Cash option */}
+                <button className="w-full border border-primary py-2 rounded-full mt-4">
                     Cash on Pickup
                 </button>
             </div>
@@ -25,10 +66,3 @@ const Payment = () => {
 };
 
 export default Payment;
-
-
-{/* <h2 className="font-bold mb-4">To Pickup</h2>
-
-          <p className="text-sm mb-2">📍 12A, High Level Road, Nugegoda</p>
-          <p className="text-sm mb-2">📅 20/01/2026</p>
-          <p className="text-sm mb-4">⏰ 10:00 AM</p> */}
