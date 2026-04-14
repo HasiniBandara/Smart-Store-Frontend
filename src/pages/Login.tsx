@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { UserRound } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -49,9 +50,10 @@ const Login = () => {
 
       <div className="flex justify-center items-center h-[80vh]">
         <div className="bg-white p-8 rounded-2xl shadow w-96">
-          <h2 className="text-2xl font-bold mb-6 text-center text-primary">
-            Login
+          <h2 className="text-2xl font-bold mb-6 text-center text-primary flex items-center justify-center gap-2">
+            LOGIN
           </h2>
+
 
           <input
             type="email"

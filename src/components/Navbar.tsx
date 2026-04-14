@@ -1,3 +1,4 @@
+import { UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -17,8 +18,11 @@ const Navbar = () => {
       <div className="text-lg font-bold">
         {!token ? (
           <Link to="/login" className="text-blue-500">
-            Login
+            <h2 className="text-2xl font-bold mb-6 text-center text-primary bg-light rounded-full p-2 flex items-center justify-center gap-2">
+              <UserRound className="w-6 h-6" />
+            </h2>
           </Link>
+
         ) : (
           <button
             onClick={() => {

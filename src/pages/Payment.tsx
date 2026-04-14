@@ -2,8 +2,12 @@ import Navbar from "../components/Navbar";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import CheckoutForm from "../components/CheckoutForm";
 
-const Payment = ({ cart, setCart }: any) => {
+const Payment = ({ cart, setCart }: { cart: any[], setCart: any }) => {
+    const [method, setMethod] = useState("paypal");
+
     const navigate = useNavigate();
 
     // ✅ calculate total amount
@@ -28,35 +32,69 @@ const Payment = ({ cart, setCart }: any) => {
                     Total: Rs. {totalAmount}
                 </h2>
 
-                {/* ✅ PAYPAL BUTTON */}
-                <PayPalButtons
-                    style={{ layout: "vertical" }}
+                {/* 🔀 PAYMENT METHOD SELECT */}
+                <div className="flex gap-2 mb-4">
+                    <button
+                        onClick={() => setMethod("paypal")}
+                        className={`flex-1 py-2 rounded-full border ${method === "paypal"
+                            ? "bg-primary text-white"
+                            : "border-primary"
+                            }`}
+                    >
+                        PayPal
+                    </button>
 
-                    createOrder={(data, actions) => {
-                        return actions.order.create({
-                            intent: "CAPTURE", // ✅ REQUIRED
+                    <button
+                        onClick={() => setMethod("stripe")}
+                        className={`flex-1 py-2 rounded-full border ${method === "stripe"
+                            ? "bg-primary text-white"
+                            : "border-primary"
+                            }`}
+                    >
+                        Card
+                    </button>
+                </div>
 
-                            purchase_units: [
-                                {
-                                    amount: {
-                                        currency_code: "USD", // ✅ REQUIRED
-                                        value: totalAmount.toString(), // ✅ MUST be string
+                {/* 🟡 PAYPAL */}
+                {method === "paypal" && (
+                    <PayPalButtons
+                        style={{ layout: "vertical" }}
+                        createOrder={(data, actions) => {
+                            return actions.order.create({
+                                intent: "CAPTURE",
+                                purchase_units: [
+                                    {
+                                        amount: {
+                                            currency_code: "USD", // changed back to USD as PayPal LKR support is limited in some integrations, but label says Rs.
+                                            value: totalAmount.toString(),
+                                        },
                                     },
-                                },
-                            ],
-                        });
-                    }}
+                                ],
+                            });
+                        }}
+                        onApprove={(data, actions) => {
+                            return actions.order!.capture().then(() => {
+                                alert("Payment successful 🎉");
+                                setCart([]);
+                                navigate("/orders");
+                            });
+                        }}
+                    />
+                )}
 
-                    onApprove={(data, actions) => {
-                        return actions.order!.capture().then((details) => {
-                            alert("Payment successful 🎉");
-                            setCart([]); // ✅ Clear cart only after payment
-                            navigate("/success"); // ✅ Navigate to success page
-                        });
-                    }}
-                />
+                {/* 💳 STRIPE */}
+                {method === "stripe" && (
+                    totalAmount > 0 ? (
+                        <CheckoutForm totalAmount={totalAmount} setCart={setCart} />
+                    ) : (
+                        <div className="text-center p-4 bg-red-50 text-red-600 rounded-lg">
+                            Your cart is empty. Add items to proceed with Card payment.
+                        </div>
+                    )
+                )}
 
-                {/* OPTIONAL: Cash option */}
+
+                {/* 💵 CASH */}
                 <button className="w-full border border-primary py-2 rounded-full mt-4">
                     Cash on Pickup
                 </button>
@@ -64,5 +102,6 @@ const Payment = ({ cart, setCart }: any) => {
         </div>
     );
 };
+
 
 export default Payment;

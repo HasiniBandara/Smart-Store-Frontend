@@ -6,9 +6,3 @@
 // if not works use CLI & run tailwind 
 
 
-// Testing email  & pw
-Email 
-sb-43vun50429596@personal.example.com 
-
-Password 
-QhPN#6dA
