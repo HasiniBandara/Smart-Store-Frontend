@@ -1,38 +1,82 @@
 import Navbar from "../components/Navbar";
+import cookies from "../assets/cookie.png";
 
 const Home = () => {
-
   return (
-    <div className="bg-primary min-h-screen text-light font-poppins">
-      
+    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
       <Navbar />
 
-      <div className="flex items-center justify-between px-16 py-16">
-        
-        <div id="home" className="max-w-lg ml-20 -mt-16">
-          <h1 className="text-5xl font-semibold mb-8">
-            Welcome to <span className="font-lily text-7xl">c & c</span>
-          </h1>
+      {/* HERO SECTION */}
+      <section className="flex flex-col -mt-10 lg:flex-row items-center justify-between px-10 lg:px-24 py-16 gap-10">
 
-          <p className="mb-4 text-lg ">
-            We make delicious cookies and cakes that bring a smile to every bite. 
-            Freshly baked, sweet, and made with love perfect for any occasion or just because.
+        {/* LEFT CONTENT */}
+        <div className="max-w-xl">
+          <p className="text-sm tracking-widest text-red-600 mb-3">
+            EST. 2024
           </p>
 
-          <h2 className="text-xl font-semibold">
-            Sweet treats, Happy moments.
-          </h2>
+          <h1 className="text-5xl text-red-500 lg:text-6xl font-bold leading-tight mb-6">
+            Cakes <span className="text-red-950">&</span> Cookies.
+          </h1>
 
+          <p className="text-gray-600 mb-8 text-lg">
+            Curated cakes and cookies designed as visual masterpieces. We blend
+            high-fashion aesthetics with heritage baking techniques.
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              // onClick={navigate("/products")}
+              className="bg-red-600 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-700 transition">
+              Explore the Collection
+            </button>
+
+            <button className="border border-red-600 text-red-600 px-6 py-3 rounded-full hover:bg-red-50 transition">
+              Our Story
+            </button>
+          </div>
+        </div>
+
+        {/* RIGHT IMAGE CARD */}
+        <div className="relative">
+          <div>
+            <img
+              src={cookies}
+              className="w-[250px] h-[450px] rounded-2xl lg:w-[380px]"
+              alt="cookies"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES */}
+      <section className="bg-white py-6 px-10 lg:px-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
+        <div>
+          <p className="text-red-600 text-xl mb-2">✦</p>
+          <h4 className="font-semibold mb-2">Artisanal Precision</h4>
+          <p className="text-gray-500 text-sm">
+            Every garnish is placed with surgical precision.
+          </p>
         </div>
 
         <div>
-          <img
-            src="/cookie.png" 
-            className="w-[400px] h-[430px] object-cover rounded-[150px] mr-20"
-          />
+          <p className="text-red-600 text-xl mb-2">🍃</p>
+          <h4 className="font-semibold mb-2">Ethical Sourcing</h4>
+          <p className="text-gray-500 text-sm">
+            Sustainable cocoa farms and local dairy producers.
+          </p>
         </div>
 
-      </div>
+        <div>
+          <p className="text-red-600 text-xl mb-2">🔥</p>
+          <h4 className="font-semibold mb-2">Baked Daily</h4>
+          <p className="text-gray-500 text-sm">
+            Freshly baked every morning for maximum flavor.
+          </p>
+        </div>
+
+      </section>
     </div>
   );
 };

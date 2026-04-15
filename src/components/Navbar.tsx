@@ -1,35 +1,62 @@
-import { UserRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { UserRound, ShoppingCart } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
+  const goToSection = (section: string) => {
+    navigate(`/products#${section}`);
+  };
 
   return (
-    <div className="flex justify-between items-center px-10 py-5 text-light">
+    <div className="flex justify-between items-center px-10 mb-9 bg-[#f6f2f3]">
 
-      <h1 className="font-lily text-3xl font-bold">c & c</h1>
+      {/* LOGO */}
+      <h1 className="text-3xl font-bold text-red-700 tracking-wide">
+        c & c
+      </h1>
 
-      <div className="bg-light text-primary px-6 py-2 rounded-full flex gap-6 font-poppins font-bold">
-        <Link to="/">HOME</Link>
-        <Link to="/products">PRODUCTS</Link>
-        <Link to="/cart">CART</Link>
+      {/* NAV LINKS */}
+      <div className="flex items-center gap-10 text-gray-700 font-medium">
+        <Link to="/" className="hover:text-red-700 transition">
+          Home
+        </Link>
+
+        <button
+          onClick={() => goToSection("cake")}
+          className="relative hover:text-red-700 transition"
+        >
+          Cakes
+        </button>
+
+        <button
+          onClick={() => goToSection("cookie")}
+          className="relative hover:text-red-700 transition"
+        >
+          Cookies
+        </button>
       </div>
 
-      <div className="text-lg font-bold">
-        {!token ? (
-          <Link to="/login" className="text-blue-500">
-            <h2 className="text-2xl font-bold mb-6 text-center text-primary bg-light rounded-full p-2 flex items-center justify-center gap-2">
-              <UserRound className="w-6 h-6" />
-            </h2>
-          </Link>
+      {/* RIGHT ICONS */}
+      <div className="flex items-center gap-6">
+        {/* CART */}
+        <Link to="/cart">
+          <ShoppingCart className="w-5 h-5 text-red-700 cursor-pointer" />
+        </Link>
 
+        {/* USER */}
+        {!token ? (
+          <Link to="/login">
+            <UserRound className="w-5 h-5 text-red-700 cursor-pointer" />
+          </Link>
         ) : (
           <button
             onClick={() => {
               localStorage.removeItem("token");
               window.location.reload();
             }}
-            className="text-red-500"
+            className="text-red-700 font-medium"
           >
             Logout
           </button>

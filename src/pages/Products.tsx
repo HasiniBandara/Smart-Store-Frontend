@@ -82,74 +82,122 @@ const Products = ({ addToCart }: ProductsProps) => {
   };
 
   return (
-    <div className="bg-[#f5f0f2] min-h-screen px-10 font-main">
+    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
       <Navbar />
 
-      {["cake", "cookie"].map((cat) => (
-        <div key={cat} className="mb-14 text-center">
+      {/* HERO */}
+      <div className="mb-16">
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-900">
+          Our Editorial{" "}
+          <span className="text-red-700">Collection</span>
+        </h1>
+        <p className="text-gray-500 mt-4 max-w-xl">
+          Hand-sculpted cakes and cookies, crafted with meticulous
+          attention to detail and flavor harmony.
+        </p>
+      </div>
 
-          <h2 className="text-3xl font-bold text-primary mb-8 uppercase">
-            {cat === "cake" ? "Cakes" : "Cookies"}
-          </h2>
+      {["cake", "cookie"].map((cat) => {
+        const filtered = products.filter((p) => p.category === cat);
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {products
-              .filter((p) => p.category === cat)
-              .map((product) => (
+        return (
+          <div id={cat} key={cat} className="mb-20">
+            {/* SECTION HEADER */}
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <p className="text-xs tracking-widest text-red-600 uppercase">
+                  Category
+                </p>
+                <h2 className="text-3xl font-semibold text-gray-900">
+                  {cat === "cake" ? "The Signature Cakes" : "Artisan Cookies"}
+                </h2>
+              </div>
+
+              <p className="text-gray-400 text-sm">
+                ({filtered.length} Varieties)
+              </p>
+            </div>
+
+            {/* GRID */}
+            <div
+              className={`grid gap-8 ${cat === "cake"
+                ? "md:grid-cols-2"
+                : "md:grid-cols-3"
+                }`}
+            >
+              {filtered.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-primary text-white rounded-2xl p-6 shadow-lg flex flex-col items-center"
+                  className="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md transition"
                 >
-                  {/* IMAGE (you can replace with real image later) */}
-                  <div className="w-24 h-24 bg-white rounded-lg mb-4" />
+                  {/* IMAGE */}
+                  <div className="relative mb-4">
+                    <div className="w-full h-56 bg-gray-200 rounded-xl" />
 
-                  <h3 className="text-lg font-bold">
-                    {product.name}
-                  </h3>
-                  <p className="text-sm text-gray-200 text-center mt-2">
-                    {/* {product.description} */}
-                    Delicious and fresh
-                  </p>
-                  <p className="mt-3 font-normal text-sm">
-                    In Stock: {product.stock}
-                  </p>
-                  <p className="mt-3 font-semibold">
-                    Rs. {Number(product.price).toFixed(2)}
-                  </p>
-
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-3 mt-4 bg-white text-primary rounded-full px-3 py-1">
-                    <button
-                      onClick={() => decrease(product.id)}
-                      className="font-bold px-2"
-                    >
-                      −
-                    </button>
-
-                    <span className="font-semibold">
-                      {cartCount[product.id] || 0}
+                    <span className="absolute top-3 right-3 bg-green-700 text-white text-xs px-3 py-1 rounded-full">
+                      IN STOCK
                     </span>
+                  </div>
+
+                  {/* INFO */}
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {product.name}
+                    </h3>
+                    <span className="text-red-700 font-semibold">
+                      ${product.price.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-500 mt-2">
+                    Delicious and freshly baked with premium ingredients.
+                  </p>
+
+                  {/* CONTROLS */}
+                  <div className="flex justify-between items-center mt-5">
+                    <div className="flex items-center gap-3 bg-gray-100 rounded-full px-3 py-1">
+                      <button
+                        onClick={() => decrease(product.id)}
+                        className="text-lg px-2"
+                      >
+                        −
+                      </button>
+
+                      <span>{cartCount[product.id] || 0}</span>
+
+                      <button
+                        onClick={() =>
+                          increase(product.id, product.stock)
+                        }
+                        className="text-lg px-2"
+                      >
+                        +
+                      </button>
+                    </div>
 
                     <button
-                      onClick={() => increase(product.id, product.stock)}
-                      className="font-bold px-2"
+                      onClick={() =>
+                        increase(product.id, product.stock)
+                      }
+                      className="bg-red-700 hover:bg-red-800 text-white px-5 py-2 rounded-full text-sm shadow"
                     >
-                      +
+                      Add to Cart
                     </button>
                   </div>
                 </div>
               ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
-      {/* Add to cart button */}
-      <div className="text-center mt-6">
+      {/* GLOBAL BUTTON */}
+      <div className="text-center mt-10">
         <button
           onClick={confirmOrder}
-          className="bg-primary text-white px-8 py-3 rounded-full font-semibold shadow"
+          className="bg-red-700 hover:bg-red-800 text-white px-10 py-3 rounded-full shadow-md"
         >
-          Add to Cart
+          Confirm Order
         </button>
       </div>
     </div>

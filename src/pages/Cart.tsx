@@ -94,24 +94,33 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const lastOrderTotal = lastOrder?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
+  const tax = total * 0.08;
+  const finalTotal = total + tax;
+
   return (
-    <div className="bg-[#f5f0f2] min-h-screen px-10 font-main">
+    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
       <Navbar />
 
-      <h1 className="text-3xl font-bold text-primary text-center mb-8">
-        CART
-      </h1>
+      {/* HEADER */}
+      <div className="px-10 lg:px-24 py-10">
+        <h1 className="text-4xl font-bold mb-2">Your Basket</h1>
+        <p className="text-gray-500">
+          Review your artisanal selections before checkout.
+        </p>
+      </div>
 
-      <div className="bg-primary text-white rounded-2xl p-8 grid md:grid-cols-[2fr_1fr] gap-8">
+      {/* MAIN GRID */}
+      <div className="grid lg:grid-cols-[2fr_1fr] gap-10 px-10 lg:px-24 pb-20">
 
-        {/* LEFT SIDE - CART ITEMS */}
-        <div>
+        {/* LEFT SIDE */}
+        <div className="space-y-6">
           {cart.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="mb-4">Your cart is empty</p>
+            <div className="bg-white p-10 rounded-xl text-center shadow-sm">
+              <p className="mb-4 text-gray-500">Your basket is empty</p>
+
               {lastOrder && (
-                <div className="bg-white/10 p-6 rounded-2xl inline-block text-left">
-                  <h3 className="font-bold mb-2">Your Last Order:</h3>
+                <div>
+                  <p className="font-semibold mb-2">Last Order</p>
                   <div className="space-y-1 mb-4">
                     {lastOrder.slice(0, 3).map((item) => (
                       <p key={item.id} className="text-sm opacity-80">
@@ -123,9 +132,10 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
                     )}
                   </div>
                   <p className="font-bold mb-4">Total: Rs. {lastOrderTotal}</p>
+
                   <button
                     onClick={handleBuyAgain}
-                    className="bg-white text-primary px-6 py-2 rounded-full font-bold hover:bg-gray-200 transition-colors"
+                    className="bg-red-600 text-white px-5 py-2 rounded-full"
                   >
                     Buy Again
                   </button>
@@ -133,102 +143,98 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
               )}
             </div>
           ) : (
-            <>
-              {/* Header Row (optional) */}
-              <div className="grid grid-cols-3 gap-4 font-bold mb-2 text-center">
-                <span></span>
-                <span></span>
-                <span className="ml-28">Total</span>
-              </div>
+            cart.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl p-5 flex justify-between items-center shadow-sm"
+              >
+                {/* LEFT INFO */}
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 bg-gray-200 rounded-lg" />
 
-              {/* Cart Items */}
-              {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-[2fr_1fr_1fr] gap-4 items-center mb-4 mx-5"
-                >
-                  {/* Column 1: Item info */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 bg-white rounded-lg" />
+                  <div>
+                    <h3 className="font-semibold">{item.name}</h3>
+                    <p className="text-sm text-gray-500">
+                      Rs. {item.price}
+                    </p>
 
-                    <div>
-                      <p className="font-semibold">{item.name}</p>
-                      <p className="text-sm">Rs. {item.price}</p>
+                    {/* QUANTITY */}
+                    <div className="flex items-center gap-3 mt-2 bg-gray-100 px-3 py-1 rounded-full w-fit">
+                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                      <span>{item.quantity}</span>
+                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                     </div>
                   </div>
+                </div>
 
-                  {/* Column 2: Quantity controls */}
-                  <div className="flex items-center gap-2 bg-white text-primary py-1 rounded-full justify-center">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="font-bold px-2"
-                    >
-                      −
-                    </button>
-
-                    <span>{item.quantity}</span>
-
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="font-bold px-2"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  {/* Column 3: Total price */}
-                  <p className="font-semibold text-right">
+                {/* RIGHT PRICE */}
+                <div className="text-right">
+                  <p className="font-semibold text-red-600">
                     Rs. {item.price * item.quantity}
                   </p>
-                </div>
-              ))}
 
-              {/* Subtotal */}
-              <div className="flex justify-between font-bold mt-6 pt-4 mx-4">
-                <span>Sub Total</span>
-                <span>Rs. {total}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, 0)}
+                    className="text-sm text-red-500 mt-2"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-            </>
+            ))
           )}
         </div>
 
-        {/* RIGHT SIDE - PICKUP CARD */}
-        <div className="bg-white text-primary rounded-2xl p-6 shadow">
+        {/* RIGHT SIDE - SUMMARY */}
+        <div className="bg-white rounded-xl p-6 shadow-sm h-fit">
+          <h2 className="text-xl font-semibold mb-6">Order Details</h2>
+
+          <div className="space-y-3 text-sm text-gray-600">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>Rs. {total}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Shipping</span>
+              <span>Free</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Tax (8%)</span>
+              <span>Rs. {tax.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="border-t my-4" />
+
+          <div className="flex justify-between font-bold text-lg">
+            <span>Total</span>
+            <span className="text-red-600">Rs. {finalTotal.toFixed(2)}</span>
+          </div>
+
           <button
             onClick={handleConfirm}
-            className="w-full bg-green-600 text-white py-2 rounded-full mb-2"
+            className="w-full bg-red-600 text-white py-3 rounded-full mt-6 hover:bg-red-700"
           >
             Confirm Order
           </button>
 
           <button
             onClick={clearCart}
-            className="w-full bg-red-800 text-white py-2 rounded-full"
+            className="w-full border mt-3 py-2 rounded-full text-sm"
           >
             Delete Order
           </button>
 
-          {/* Previous Orders info */}
-          {lastOrder && (
-            <div className="mt-6 border-t pt-4">
-              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Last Order</p>
-              <div className="flex justify-between items-center text-sm">
-                <span>Rs. {lastOrderTotal}</span>
-                <span className="text-green-600 font-medium">Completed</span>
-              </div>
-            </div>
-          )}
-
-          {/* Previous Orders Button */}
+          {/* ORDER HISTORY */}
           {allOrders.length > 0 && (
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => navigate("/orders")}
-                className="w-full border border-primary text-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-colors text-sm font-semibold"
-              >
-                View Order History
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/orders")}
+              className="w-full mt-4 text-sm text-red-600"
+            >
+              View Order History
+            </button>
           )}
         </div>
       </div>

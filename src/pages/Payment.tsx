@@ -115,161 +115,205 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#f5f0f2] px-10">
+        <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
             <Navbar />
 
-            <h1 className="text-3xl font-bold text-primary text-center mb-10">
-                Payment
-            </h1>
+            {/* HEADER */}
+            <div className="px-10 lg:px-24 py-10">
+                <p className="text-sm tracking-widest text-red-600 mb-2">
+                    CHECKOUT JOURNEY
+                </p>
 
-            <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow">
+                <h1 className="text-4xl lg:text-5xl font-bold mb-4">
+                    Complete Your Order
+                </h1>
 
-                {/* Total */}
-                <div className="mb-4">
-                    <h2 className="text-lg font-semibold">
-                        Total: Rs. {totalLKR.toLocaleString()}
+                <p className="text-gray-600 max-w-xl">
+                    Please select your preferred payment method to secure your selection from our freshly baked batch.
+                </p>
+            </div>
+
+            {/* MAIN GRID */}
+            <div className="grid lg:grid-cols-[2fr_1fr] gap-10 px-10 lg:px-24 pb-20">
+
+                {/* LEFT SIDE */}
+                <div>
+                    <h2 className="text-lg font-semibold mb-4">
+                        Select Payment Method
                     </h2>
-                    <div className="mt-1 text-sm text-gray-500">
-                        {rateLoading ? (
-                            <span className="italic">Fetching USD rate...</span>
-                        ) : rateError ? (
-                            <span className="text-amber-600">⚠ Using fallback rate · ≈ ${totalUSD.toFixed(2)} USD</span>
-                        ) : (
-                            <span>
-                                ≈ ${totalUSD.toFixed(2)} USD
-                                <span className="ml-2 text-xs text-gray-400">
-                                    (1 LKR = ${usdRate?.toFixed(6)} USD · live rate)
+
+                    {/* CASH OPTION */}
+                    <div
+                        onClick={() => setMethod("cash")}
+                        className={`border rounded-xl p-5 mb-4 cursor-pointer flex justify-between items-center
+                        ${method === "cash" ? "border-red-600 bg-red-50" : "bg-white"}`}
+                    >
+                        <div>
+                            <p className="font-semibold">Cash on Pickup</p>
+                            <p className="text-sm text-gray-500">
+                                Pay when you collect your order
+                            </p>
+                            <p className="text-xs text-gray-400 mt-2">
+                                No 100, High level road, Maharagama
+                            </p>
+                        </div>
+
+                        <div className={`w-5 h-5 rounded-full border-2 ${method === "cash" ? "border-red-600 bg-red-600" : "border-gray-400"}`} />
+                    </div>
+
+                    {/* OTHER METHODS GRID */}
+                    <div className="grid grid-cols-2 gap-4">
+                        {["paypal", "stripe", "mintpay", "koko"].map((m) => (
+                            <div
+                                key={m}
+                                onClick={() => setMethod(m)}
+                                className={`border rounded-xl p-4 cursor-pointer flex justify-between items-center
+                                ${method === m ? "border-red-600 bg-red-50" : "bg-white"}`}
+                            >
+                                <span className="capitalize">
+                                    {m === "mintpay" ? "Mintpay" : m}
                                 </span>
-                            </span>
+                                <div className={`w-4 h-4 rounded-full border ${method === m ? "bg-red-600 border-red-600" : ""}`} />
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* PAYMENT UI */}
+                    <div className="mt-6 bg-white p-6 rounded-xl shadow-sm">
+
+                        {/* PAYPAL */}
+                        {method === "paypal" && totalLKR > 0 && (
+                            <>
+                                <div className="text-sm text-gray-500 mb-3">
+                                    {rateLoading ? (
+                                        <span className="italic">Fetching exchange rate...</span>
+                                    ) : rateError ? (
+                                        <span className="text-amber-600">
+                                            ⚠ Using fallback rate · ≈ ${totalUSD.toFixed(2)} USD
+                                        </span>
+                                    ) : (
+                                        <span>
+                                            Pay <strong>${totalUSD.toFixed(2)} USD</strong>
+                                            <span className="ml-2 text-xs text-gray-400">
+                                                (live rate)
+                                            </span>
+                                        </span>
+                                    )}
+                                </div>
+
+                                {!rateLoading && (
+                                    <PayPalButtons
+                                        style={{ layout: "vertical" }}
+                                        createOrder={(_data, actions) =>
+                                            actions.order.create({
+                                                intent: "CAPTURE",
+                                                purchase_units: [{
+                                                    amount: {
+                                                        currency_code: "USD",
+                                                        value: totalUSD.toFixed(2)
+                                                    }
+                                                }],
+                                            })
+                                        }
+                                        onApprove={(_data, actions) =>
+                                            actions.order!.capture().then(() => {
+                                                alert("Payment successful 🎉");
+                                                setCart([]);
+                                                navigate("/orders");
+                                            })
+                                        }
+                                    />
+                                )}
+                            </>
+                        )}
+
+                        {/* STRIPE */}
+                        {method === "stripe" && totalLKR > 0 && (
+                            <CheckoutForm totalAmount={totalLKR} setCart={setCart} />
+                        )}
+
+                        {/* MINTPAY */}
+                        {method === "mintpay" && totalLKR > 0 && (
+                            <div>
+                                <button
+                                    onClick={handleMintpay}
+                                    disabled={mintpayLoading}
+                                    className={`w-full py-3 rounded-full text-white ${mintpayLoading ? "bg-gray-400" : "bg-blue-600"
+                                        }`}
+                                >
+                                    {mintpayLoading ? "Redirecting..." : "Pay with Mintpay"}
+                                </button>
+
+                                {mintpayError && (
+                                    <p className="text-red-500 text-sm mt-2 text-center">
+                                        {mintpayError}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* KOKO */}
+                        {method === "koko" && totalLKR > 0 && (
+                            <div>
+                                <button
+                                    onClick={handleKoko}
+                                    disabled={kokoLoading}
+                                    className={`w-full py-3 rounded-full text-white ${kokoLoading ? "bg-gray-400" : "bg-purple-600"
+                                        }`}
+                                >
+                                    {kokoLoading ? "Processing..." : "Pay with Koko"}
+                                </button>
+
+                                {kokoError && (
+                                    <p className="text-red-500 text-sm mt-2 text-center">
+                                        {kokoError}
+                                    </p>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
 
-                {/* Payment method tabs */}
-                <div className="flex gap-2 mb-4">
-                    {["paypal", "stripe", "mintpay", "koko"].map((m) => (<button
-                        key={m}
-                        onClick={() => setMethod(m)}
-                        className={`flex-1 py-2 rounded-full border capitalize ${method === m ? "bg-primary text-white" : "border-primary"
-                            }`}
-                    >
-                        {m === "mintpay" ? "Mintpay" : m.charAt(0).toUpperCase() + m.slice(1)}
-                    </button>
-                    ))}
+                {/* RIGHT SIDE - SUMMARY */}
+                <div className="bg-white rounded-xl shadow-sm overflow-hidden h-fit">
+
+                    {/* IMAGE HEADER */}
+                    <div className="bg-red-700 text-white p-6">
+                        <h3 className="text-xl font-semibold">
+                            Order Summary
+                        </h3>
+                    </div>
+
+                    {/* ORDER DETAILS */}
+                    <div className="p-6">
+
+                        <div className="space-y-2 text-sm text-gray-600">
+                            {cart.map((item) => (
+                                <div key={item.id} className="flex justify-between">
+                                    <span>
+                                        {item.name} (x{item.quantity})
+                                    </span>
+                                    <span>
+                                        Rs. {(item.price * item.quantity).toFixed(2)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="border-t my-4" />
+
+                        <div className="flex justify-between font-bold text-lg">
+                            <span>Total</span>
+                            <span className="text-red-600">
+                                Rs. {totalLKR.toFixed(2)}
+                            </span>
+                        </div>
+
+                        <p className="text-xs text-gray-400 text-center mt-3">
+                            Encrypted & secure transaction
+                        </p>
+                    </div>
                 </div>
-
-                {/* PayPal */}
-                {method === "paypal" && (
-                    totalLKR > 0 ? (
-                        rateLoading ? (
-                            <div className="text-center py-6 text-gray-400 italic">Loading exchange rate...</div>
-                        ) : (
-                            <>
-                                <p className="text-xs text-gray-400 text-center mb-2">
-                                    PayPal will charge <strong>${totalUSD.toFixed(2)} USD</strong> (converted from Rs. {totalLKR.toLocaleString()})
-                                </p>
-                                <PayPalButtons
-                                    style={{ layout: "vertical" }}
-                                    createOrder={(_data, actions) =>
-                                        actions.order.create({
-                                            intent: "CAPTURE",
-                                            purchase_units: [{ amount: { currency_code: "USD", value: totalUSD.toFixed(2) } }],
-                                        })
-                                    }
-                                    onApprove={(_data, actions) =>
-                                        actions.order!.capture().then(() => {
-                                            alert("Payment successful 🎉");
-                                            setCart([]);
-                                            navigate("/orders");
-                                        })
-                                    }
-                                />
-                            </>
-                        )
-                    ) : (
-                        <div className="text-center p-4 bg-red-50 text-red-600 rounded-lg">
-                            Your cart is empty. Add items to proceed with PayPal.
-                        </div>
-                    )
-                )}
-
-                {/* Stripe */}
-                {method === "stripe" && (
-                    totalLKR > 0 ? (
-                        <CheckoutForm totalAmount={totalLKR} setCart={setCart} />
-                    ) : (
-                        <div className="text-center p-4 bg-red-50 text-red-600 rounded-lg">
-                            Your cart is empty. Add items to proceed with Card payment.
-                        </div>
-                    )
-                )}
-
-                {/* Mintpay */}
-                {method === "mintpay" && (
-                    totalLKR > 0 ? (
-                        <div>
-                            <p className="text-sm text-gray-500 text-center mb-3">
-                                Pay Rs. {totalLKR.toLocaleString()} with Mintpay — Pay Now or split into 3 interest-free instalments.
-                            </p>
-                            <button
-                                onClick={handleMintpay}
-                                disabled={mintpayLoading}
-                                className={`w-full py-2 rounded-full font-semibold text-white transition ${mintpayLoading ? "bg-gray-400 cursor-not-allowed" : "bg-[#0066FF] hover:bg-[#0052CC]"
-                                    }`}
-                            >
-                                {mintpayLoading ? "Redirecting to Mintpay..." : "Pay with Mintpay"}
-                            </button>
-                            {mintpayError && (
-                                <p className="text-red-500 text-sm text-center mt-2">{mintpayError}</p>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-center p-4 bg-red-50 text-red-600 rounded-lg">
-                            Your cart is empty. Add items to proceed with Mintpay.
-                        </div>
-                    )
-                )}
-
-                {/* Koko (Simulation) */}
-                {method === "koko" && (
-                    totalLKR > 0 ? (
-                        <div>
-                            <p className="text-sm text-gray-500 text-center mb-3">
-                                Pay Rs. {totalLKR.toLocaleString()} with Koko — Pay in 3 interest-free instalments.
-                            </p>
-
-                            <div className="text-center text-xs text-gray-400 mb-2">
-                                Rs. {(totalLKR / 3).toLocaleString()} × 3 months
-                            </div>
-
-                            <button
-                                onClick={handleKoko}
-                                disabled={kokoLoading}
-                                className={`w-full py-2 rounded-full font-semibold text-white transition ${kokoLoading
-                                    ? "bg-gray-400 cursor-not-allowed"
-                                    : "bg-purple-600 hover:bg-purple-700"
-                                    }`}
-                            >
-                                {kokoLoading ? "Processing..." : "Pay with Koko"}
-                            </button>
-
-                            {kokoError && (
-                                <p className="text-red-500 text-sm text-center mt-2">
-                                    {kokoError}
-                                </p>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="text-center p-4 bg-red-50 text-red-600 rounded-lg">
-                            Your cart is empty. Add items to proceed with Koko.
-                        </div>
-                    )
-                )}
-
-                {/* Cash */}
-                <button className="w-full border border-primary py-2 rounded-full mt-4">
-                    Cash on Pickup
-                </button>
             </div>
         </div>
     );
