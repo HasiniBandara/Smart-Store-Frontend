@@ -7,7 +7,7 @@ interface CartProps {
   cart: CartItem[];
   clearCart: () => void;
   confirmCart: () => void;
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>; // ✅ ADD THIS
+  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
 const Cart = ({ cart, clearCart, setCart }: CartProps) => {
@@ -79,14 +79,20 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
       setLastOrder(orderItems);
 
       navigate("/payment");
-
     } catch (error) {
       console.error("Error confirming order:", error);
       alert("Failed to confirm order");
     }
   };
 
+  const handleBuyAgain = () => {
+    if (lastOrder) {
+      setCart(lastOrder);
+    }
+  };
+
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const lastOrderTotal = lastOrder?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
   return (
     <div className="bg-[#f5f0f2] min-h-screen px-10 font-main">
@@ -101,7 +107,31 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
         {/* LEFT SIDE - CART ITEMS */}
         <div>
           {cart.length === 0 ? (
-            <p>Your cart is empty</p>
+            <div className="text-center py-10">
+              <p className="mb-4">Your cart is empty</p>
+              {lastOrder && (
+                <div className="bg-white/10 p-6 rounded-2xl inline-block text-left">
+                  <h3 className="font-bold mb-2">Your Last Order:</h3>
+                  <div className="space-y-1 mb-4">
+                    {lastOrder.slice(0, 3).map((item) => (
+                      <p key={item.id} className="text-sm opacity-80">
+                        • {item.name} (x{item.quantity})
+                      </p>
+                    ))}
+                    {lastOrder.length > 3 && (
+                      <p className="text-xs opacity-60">...and {lastOrder.length - 3} more items</p>
+                    )}
+                  </div>
+                  <p className="font-bold mb-4">Total: Rs. {lastOrderTotal}</p>
+                  <button
+                    onClick={handleBuyAgain}
+                    className="bg-white text-primary px-6 py-2 rounded-full font-bold hover:bg-gray-200 transition-colors"
+                  >
+                    Buy Again
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               {/* Header Row (optional) */}
@@ -178,14 +208,25 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
             Delete Order
           </button>
 
-          {/* Previous Orders */}
-          {allOrders.length > 1 && (
-            <div className="mt-10 text-center">
+          {/* Previous Orders info */}
+          {lastOrder && (
+            <div className="mt-6 border-t pt-4">
+              <p className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Last Order</p>
+              <div className="flex justify-between items-center text-sm">
+                <span>Rs. {lastOrderTotal}</span>
+                <span className="text-green-600 font-medium">Completed</span>
+              </div>
+            </div>
+          )}
+
+          {/* Previous Orders Button */}
+          {allOrders.length > 0 && (
+            <div className="mt-6 text-center">
               <button
                 onClick={() => navigate("/orders")}
-                className="bg-primary text-white px-6 py-2 rounded-full shadow"
+                className="w-full border border-primary text-primary px-6 py-2 rounded-full hover:bg-primary hover:text-white transition-colors text-sm font-semibold"
               >
-                View Previous Orders
+                View Order History
               </button>
             </div>
           )}

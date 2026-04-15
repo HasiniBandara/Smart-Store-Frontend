@@ -59,7 +59,7 @@ const Payment = ({ cart, setCart }: { cart: any[], setCart: any }) => {
                 {method === "paypal" && (
                     <PayPalButtons
                         style={{ layout: "vertical" }}
-                        createOrder={(data, actions) => {
+                        createOrder={(_data, actions) => {
                             return actions.order.create({
                                 intent: "CAPTURE",
                                 purchase_units: [
@@ -72,7 +72,7 @@ const Payment = ({ cart, setCart }: { cart: any[], setCart: any }) => {
                                 ],
                             });
                         }}
-                        onApprove={(data, actions) => {
+                        onApprove={(_data, actions) => {
                             return actions.order!.capture().then(() => {
                                 alert("Payment successful 🎉");
                                 setCart([]);
