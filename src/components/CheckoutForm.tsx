@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 interface Props {
     totalAmount: number;
+    cart: any[];
     setCart: (cart: any[]) => void;
 }
 
-const CheckoutForm = ({ totalAmount, setCart }: Props) => {
+const CheckoutForm = ({ totalAmount, cart, setCart }: Props) => {
     const stripe = useStripe();
     const elements = useElements();
     const navigate = useNavigate();
@@ -34,6 +35,26 @@ const CheckoutForm = ({ totalAmount, setCart }: Props) => {
             if (result.error) {
                 alert(result.error.message);
             } else if (result.paymentIntent?.status === "succeeded") {
+                try {
+                    // Try saving order on Stripe success
+                    await fetch("http://localhost:3000/orders", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            userId: 1,
+                            totalPrice: totalAmount,
+                            status: "paid",
+                            cartItems: cart.map(item => ({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                price: item.price
+                            }))
+                        })
+                    });
+                } catch (e) {
+                    console.error("Order save failed:", e);
+                }
+                
                 alert("Payment successful 🎉");
                 setCart([]);
                 navigate("/orders");

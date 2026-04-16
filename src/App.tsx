@@ -61,6 +61,7 @@ function App() {
       <Route path="/orders" element={<Orders />} />
       <Route path="/login" element={<Login />} />
 
+      <Route path="/products/:category" element={<Products addToCart={addToCart} />} />
     </Routes>
   );
 }

@@ -16,6 +16,28 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
     const navigate = useNavigate();
 
+    const saveOrder = async (status: string) => {
+        try {
+            const res = await fetch("http://localhost:3000/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: 1, // Hardcoded for now as per schema requirements
+                    totalPrice: totalLKR,
+                    status: status,
+                    cartItems: cart.map(item => ({
+                        productId: item.id,
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
+                })
+            });
+            if (!res.ok) console.error("Failed to save order");
+        } catch (e) {
+            console.error("Error saving order:", e);
+        }
+    };
+
     const totalLKR = useMemo(() =>
         cart.reduce((sum: number, item: any) => sum + Number(item.price) * item.quantity, 0),
         [cart]
@@ -104,6 +126,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                 `Monthly: Rs. ${data.monthlyAmount}`
             );
 
+            await saveOrder("paid");
             setCart([]);
             navigate("/orders");
 
@@ -120,7 +143,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
             {/* HEADER */}
             <div className="px-10 lg:px-24 py-10">
-                <p className="text-sm tracking-widest text-red-600 mb-2">
+                <p className="text-sm tracking-widest text-primary mb-2">
                     CHECKOUT JOURNEY
                 </p>
 
@@ -146,7 +169,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                     <div
                         onClick={() => setMethod("cash")}
                         className={`border rounded-xl p-5 mb-4 cursor-pointer flex justify-between items-center
-                        ${method === "cash" ? "border-red-600 bg-red-50" : "bg-white"}`}
+                        ${method === "cash" ? "border-primary bg-red-50" : "bg-white"}`}
                     >
                         <div>
                             <p className="font-semibold">Cash on Pickup</p>
@@ -158,7 +181,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                             </p>
                         </div>
 
-                        <div className={`w-5 h-5 rounded-full border-2 ${method === "cash" ? "border-red-600 bg-red-600" : "border-gray-400"}`} />
+                        <div className={`w-5 h-5 rounded-full border-2 ${method === "cash" ? "border-primary bg-primary" : "border-gray-400"}`} />
                     </div>
 
                     {/* OTHER METHODS GRID */}
@@ -168,12 +191,12 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                                 key={m}
                                 onClick={() => setMethod(m)}
                                 className={`border rounded-xl p-4 cursor-pointer flex justify-between items-center
-                                ${method === m ? "border-red-600 bg-red-50" : "bg-white"}`}
+                                ${method === m ? "border-primary bg-red-50" : "bg-white"}`}
                             >
                                 <span className="capitalize">
                                     {m === "mintpay" ? "Mintpay" : m}
                                 </span>
-                                <div className={`w-4 h-4 rounded-full border ${method === m ? "bg-red-600 border-red-600" : ""}`} />
+                                <div className={`w-4 h-4 rounded-full border ${method === m ? "bg-primary border-primary" : ""}`} />
                             </div>
                         ))}
                     </div>
@@ -216,7 +239,8 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                                             })
                                         }
                                         onApprove={(_data, actions) =>
-                                            actions.order!.capture().then(() => {
+                                            actions.order!.capture().then(async () => {
+                                                await saveOrder("paid");
                                                 alert("Payment successful 🎉");
                                                 setCart([]);
                                                 navigate("/orders");
@@ -229,7 +253,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
                         {/* STRIPE */}
                         {method === "stripe" && totalLKR > 0 && (
-                            <CheckoutForm totalAmount={totalLKR} setCart={setCart} />
+                            <CheckoutForm totalAmount={totalLKR} cart={cart} setCart={setCart} />
                         )}
 
                         {/* MINTPAY */}
@@ -278,7 +302,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                 <div className="bg-white rounded-xl shadow-sm overflow-hidden h-fit">
 
                     {/* IMAGE HEADER */}
-                    <div className="bg-red-700 text-white p-6">
+                    <div className="bg-primary text-white p-6">
                         <h3 className="text-xl font-semibold">
                             Order Summary
                         </h3>
@@ -304,7 +328,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
                         <div className="flex justify-between font-bold text-lg">
                             <span>Total</span>
-                            <span className="text-red-600">
+                            <span className="text-primary">
                                 Rs. {totalLKR.toFixed(2)}
                             </span>
                         </div>

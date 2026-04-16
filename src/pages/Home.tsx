@@ -11,11 +11,11 @@ const Home = () => {
 
         {/* LEFT CONTENT */}
         <div className="max-w-xl">
-          <p className="text-sm tracking-widest text-red-600 mb-3">
+          <p className="text-sm tracking-widest text-primary mb-3">
             EST. 2024
           </p>
 
-          <h1 className="text-5xl text-red-500 lg:text-6xl font-bold leading-tight mb-6">
+          <h1 className="text-5xl text-primary lg:text-6xl font-bold leading-tight mb-6">
             Cakes <span className="text-red-950">&</span> Cookies.
           </h1>
 
@@ -24,17 +24,13 @@ const Home = () => {
             high-fashion aesthetics with heritage baking techniques.
           </p>
 
-          <div className="flex gap-4">
+          {/* <div className="flex gap-4">
             <button
               // onClick={navigate("/products")}
-              className="bg-red-600 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-700 transition">
+              className="bg-primary text-white px-6 py-3 rounded-full shadow-md hover:bg-primary transition">
               Explore the Collection
             </button>
-
-            <button className="border border-red-600 text-red-600 px-6 py-3 rounded-full hover:bg-red-50 transition">
-              Our Story
-            </button>
-          </div>
+          </div> */}
         </div>
 
         {/* RIGHT IMAGE CARD */}

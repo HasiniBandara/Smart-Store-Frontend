@@ -32,7 +32,7 @@ const Login = () => {
       // Save token
       localStorage.setItem("token", data.token);
 
-      alert("Login successful!");
+      // alert("Login successful!");
 
       // Redirect to products page
       navigate("/products");
@@ -50,7 +50,7 @@ const Login = () => {
         <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden flex">
 
           {/* LEFT SIDE */}
-          <div className="w-1/2 relative bg-gradient-to-br from-[#f0bdc3] via-[#a4404d] to-[#7a1f2b] text-white p-10 flex flex-col justify-end">
+          <div className="w-1/2 relative bg-gradient-to-br from-light via-[#a4404d] to-primary text-white p-10 flex flex-col justify-end">
 
             <div className="absolute top-10 right-20 rotate-[-8deg] shadow-xl">
               <img
@@ -76,7 +76,7 @@ const Login = () => {
 
             <p className="text-sm text-gray-500 mb-6">
               New to the c & c?{" "}
-              <span className="text-red-600 cursor-pointer font-medium">
+              <span className="text-primary cursor-pointer font-medium">
                 Sign Up Here
               </span>
             </p>
@@ -97,7 +97,7 @@ const Login = () => {
             {/* PASSWORD */}
             <div className="flex justify-between items-center mb-1">
               <label className="text-sm text-gray-600">Password</label>
-              <span className="text-xs text-red-600 cursor-pointer">
+              <span className="text-xs text-primary cursor-pointer">
                 Forgot password?
               </span>
             </div>
@@ -115,9 +115,9 @@ const Login = () => {
             {/* BUTTON */}
             <button
               onClick={handleLogin}
-              className="w-full bg-gradient-to-r from-red-700 to-red-900 text-white py-3 rounded-full font-semibold shadow-lg hover:opacity-90 transition"
+              className="w-full bg-gradient-to-r bg-primary text-white py-3 rounded-full font-semibold shadow-lg hover:opacity-90 transition"
             >
-              Access Your Account →
+              Access Your Account
             </button>
 
           </div>

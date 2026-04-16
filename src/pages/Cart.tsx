@@ -135,7 +135,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
 
                   <button
                     onClick={handleBuyAgain}
-                    className="bg-red-600 text-white px-5 py-2 rounded-full"
+                    className="bg-primary text-white px-5 py-2 rounded-full"
                   >
                     Buy Again
                   </button>
@@ -169,13 +169,13 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
 
                 {/* RIGHT PRICE */}
                 <div className="text-right">
-                  <p className="font-semibold text-red-600">
+                  <p className="font-semibold text-primary">
                     Rs. {item.price * item.quantity}
                   </p>
 
                   <button
                     onClick={() => updateQuantity(item.id, 0)}
-                    className="text-sm text-red-500 mt-2"
+                    className="text-sm text-primary mt-2"
                   >
                     Remove
                   </button>
@@ -210,12 +210,12 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
 
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>
-            <span className="text-red-600">Rs. {finalTotal.toFixed(2)}</span>
+            <span className="text-primary">Rs. {finalTotal.toFixed(2)}</span>
           </div>
 
           <button
             onClick={handleConfirm}
-            className="w-full bg-red-600 text-white py-3 rounded-full mt-6 hover:bg-red-700"
+            className="w-full bg-primary text-white py-3 rounded-full mt-6 hover:bg-primary"
           >
             Confirm Order
           </button>
@@ -231,7 +231,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
           {allOrders.length > 0 && (
             <button
               onClick={() => navigate("/orders")}
-              className="w-full mt-4 text-sm text-red-600"
+              className="w-full mt-4 text-sm text-primary"
             >
               View Order History
             </button>
