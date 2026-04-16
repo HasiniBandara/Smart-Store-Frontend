@@ -88,22 +88,26 @@ const Products = ({ addToCart }: ProductsProps) => {
   };
 
   return (
-    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
+    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans transition-opacity duration-500 opacity-100">
       <Navbar />
 
       {/* HERO */}
-      <div className="mb-16">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-900">
-          Our Editorial{" "}
-          <span className="text-primary">Collection</span>
+      <div className="mb-10">
+        <h1 className="text-5xl md:text-6xl font-bold text-primary">
+          {cat === "cake"
+            ? "Our Cake Collection"
+            : "Our Cookie Collection"
+          }
+
         </h1>
         <p className="text-gray-500 mt-4 max-w-xl">
-          Hand-sculpted cakes and cookies, crafted with meticulous
-          attention to detail and flavor harmony.
+          {cat === "cake"
+            ? "Hand-sculpted cakes, crafted with meticulous attention to detail and flavor harmony."
+            : "Hand-sculpted cookies, crafted with meticulous attention to detail and flavor harmony."
+          }
         </p>
       </div>
 
-      return (
       <div id={cat} className="mb-20">
         {/* SECTION HEADER */}
         <div className="flex justify-between items-center mb-8">
@@ -123,7 +127,7 @@ const Products = ({ addToCart }: ProductsProps) => {
 
         {/* GRID */}
         <div
-          className={`grid gap-8 ${cat === "cake" ? "md:grid-cols-2" : "md:grid-cols-3"
+          className={`grid gap-8 ${cat === "cake" ? "md:grid-cols-3" : "md:grid-cols-3"
             }`}
         >
           {filtered.map((product) => (
@@ -184,11 +188,10 @@ const Products = ({ addToCart }: ProductsProps) => {
           ))}
         </div>
       </div>
-      );
 
 
       {/* GLOBAL BUTTON */}
-      <div className="text-center mt-10">
+      <div className="text-center">
         <button
           onClick={confirmOrder}
           className="bg-primary hover:bg-primary text-white px-10 py-3 rounded-full shadow-md"

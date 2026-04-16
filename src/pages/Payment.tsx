@@ -9,10 +9,6 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
     const [usdRate, setUsdRate] = useState<number | null>(null);
     const [rateLoading, setRateLoading] = useState(true);
     const [rateError, setRateError] = useState(false);
-    const [mintpayLoading, setMintpayLoading] = useState(false);
-    const [mintpayError, setMintpayError] = useState("");
-    const [kokoLoading, setKokoLoading] = useState(false);
-    const [kokoError, setKokoError] = useState("");
 
     const navigate = useNavigate();
 
@@ -67,75 +63,6 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
         return Math.max(totalLKR * usdRate, 0.5);
     }, [totalLKR, usdRate]);
 
-    // Mintpay handler
-    const handleMintpay = async () => {
-        if (totalLKR <= 0) return;
-        setMintpayLoading(true);
-        setMintpayError("");
-        try {
-            const orderId = `ORD-${Date.now()}`;
-            const customerEmail = "customer@example.com"; // replace with actual user email from auth
-
-            const res = await fetch("http://localhost:3000/payment/mintpay", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount: totalLKR, orderId, customerEmail }),
-            });
-
-            if (!res.ok) throw new Error("Failed to initiate Mintpay payment");
-
-            const data = await res.json();
-
-            if (data.redirectUrl) {
-                window.location.href = data.redirectUrl; // redirect to Mintpay hosted page
-            } else {
-                throw new Error("No redirect URL returned from Mintpay");
-            }
-        } catch (err: any) {
-            setMintpayError(err.message || "Something went wrong with Mintpay");
-        } finally {
-            setMintpayLoading(false);
-        }
-    };
-
-    const handleKoko = async () => {
-        if (totalLKR <= 0) return;
-
-        setKokoLoading(true);
-        setKokoError("");
-
-        try {
-            const orderId = `ORD-${Date.now()}`;
-
-            const res = await fetch("http://localhost:3000/payment/simulate/koko", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    amount: totalLKR,
-                    orderId
-                }),
-            });
-
-            if (!res.ok) throw new Error("Koko simulation failed");
-
-            const data = await res.json();
-
-            alert(
-                `Koko Payment Successful 🎉\n\n` +
-                `Installments: ${data.installments}\n` +
-                `Monthly: Rs. ${data.monthlyAmount}`
-            );
-
-            await saveOrder("paid");
-            setCart([]);
-            navigate("/orders");
-
-        } catch (err: any) {
-            setKokoError(err.message || "Koko payment failed");
-        } finally {
-            setKokoLoading(false);
-        }
-    };
 
     return (
         <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
@@ -186,7 +113,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
                     {/* OTHER METHODS GRID */}
                     <div className="grid grid-cols-2 gap-4">
-                        {["paypal", "stripe", "mintpay", "koko"].map((m) => (
+                        {["paypal", "stripe"].map((m) => (
                             <div
                                 key={m}
                                 onClick={() => setMethod(m)}
@@ -194,7 +121,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                                 ${method === m ? "border-primary bg-red-50" : "bg-white"}`}
                             >
                                 <span className="capitalize">
-                                    {m === "mintpay" ? "Mintpay" : m}
+                                    {m}
                                 </span>
                                 <div className={`w-4 h-4 rounded-full border ${method === m ? "bg-primary border-primary" : ""}`} />
                             </div>
@@ -256,45 +183,6 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                             <CheckoutForm totalAmount={totalLKR} cart={cart} setCart={setCart} />
                         )}
 
-                        {/* MINTPAY */}
-                        {method === "mintpay" && totalLKR > 0 && (
-                            <div>
-                                <button
-                                    onClick={handleMintpay}
-                                    disabled={mintpayLoading}
-                                    className={`w-full py-3 rounded-full text-white ${mintpayLoading ? "bg-gray-400" : "bg-blue-600"
-                                        }`}
-                                >
-                                    {mintpayLoading ? "Redirecting..." : "Pay with Mintpay"}
-                                </button>
-
-                                {mintpayError && (
-                                    <p className="text-red-500 text-sm mt-2 text-center">
-                                        {mintpayError}
-                                    </p>
-                                )}
-                            </div>
-                        )}
-
-                        {/* KOKO */}
-                        {method === "koko" && totalLKR > 0 && (
-                            <div>
-                                <button
-                                    onClick={handleKoko}
-                                    disabled={kokoLoading}
-                                    className={`w-full py-3 rounded-full text-white ${kokoLoading ? "bg-gray-400" : "bg-purple-600"
-                                        }`}
-                                >
-                                    {kokoLoading ? "Processing..." : "Pay with Koko"}
-                                </button>
-
-                                {kokoError && (
-                                    <p className="text-red-500 text-sm mt-2 text-center">
-                                        {kokoError}
-                                    </p>
-                                )}
-                            </div>
-                        )}
                     </div>
                 </div>
 

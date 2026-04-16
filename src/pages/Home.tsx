@@ -1,9 +1,11 @@
 import Navbar from "../components/Navbar";
 import cookies from "../assets/cookie.png";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   return (
-    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
+    <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans transition-opacity duration-500 opacity-100">
       <Navbar />
 
       {/* HERO SECTION */}
@@ -23,14 +25,6 @@ const Home = () => {
             Curated cakes and cookies designed as visual masterpieces. We blend
             high-fashion aesthetics with heritage baking techniques.
           </p>
-
-          {/* <div className="flex gap-4">
-            <button
-              // onClick={navigate("/products")}
-              className="bg-primary text-white px-6 py-3 rounded-full shadow-md hover:bg-primary transition">
-              Explore the Collection
-            </button>
-          </div> */}
         </div>
 
         {/* RIGHT IMAGE CARD */}
@@ -71,8 +65,14 @@ const Home = () => {
             Freshly baked every morning for maximum flavor.
           </p>
         </div>
-
       </section>
+      <div className="flex justify-center items-center mt-5">
+        <button
+          onClick={() => navigate("/products")}
+          className=" bg-primary text-white px-6 py-3 rounded-full shadow-md hover:bg-primary transition">
+          Explore the Collection
+        </button>
+      </div>
     </div>
   );
 };
