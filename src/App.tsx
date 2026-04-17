@@ -6,8 +6,6 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Payment from "./pages/Payment";
 import Orders from "./pages/Orders";
-// const stripePromise = loadStripe("YOUR_PUBLISHABLE_KEY");
-
 
 export type CartItem = {
   id: number;

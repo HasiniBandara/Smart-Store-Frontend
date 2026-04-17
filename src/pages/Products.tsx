@@ -8,7 +8,7 @@ import { useParams } from "react-router-dom";
 type Product = {
   id: number;
   name: string;
-  description: string;
+  image: string;
   price: number;
   stock: number;
   category: "cake" | "cookie";
@@ -138,11 +138,23 @@ const Products = ({ addToCart }: ProductsProps) => {
               {/* SAME CARD CODE */}
               {/* IMAGE */}
               <div className="relative mb-4">
-                <div className="w-full h-56 bg-gray-200 rounded-xl" />
+                <div className="flex justify-center items-center">
 
-                <span className="absolute top-3 right-3 bg-green-700 text-white text-xs px-3 py-1 rounded-full">
-                  IN STOCK
-                </span>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-60 rounded-xl"
+                  />
+                </div>
+                {product.stock > 0 ? (
+                  <span className="absolute top-3 right-3 bg-green-700 text-white text-xs px-3 py-1 rounded-full">
+                    IN STOCK
+                  </span>
+                ) : (
+                  <span className="absolute top-3 right-3 bg-red-600 text-white text-xs px-3 py-1 rounded-full">
+                    OUT OF STOCK
+                  </span>
+                )}
               </div>
 
               {/* INFO */}

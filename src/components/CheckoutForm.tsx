@@ -48,7 +48,9 @@ const CheckoutForm = ({ totalAmount, cart, setCart }: Props) => {
                                 productId: item.id,
                                 quantity: item.quantity,
                                 price: item.price
-                            }))
+                            })),
+                            transactionId: result.paymentIntent.id,
+                            paymentGateway: "stripe"
                         })
                     });
                 } catch (e) {

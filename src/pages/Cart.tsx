@@ -150,7 +150,6 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
               >
                 {/* LEFT INFO */}
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-lg" />
 
                   <div>
                     <h3 className="font-semibold">{item.name}</h3>

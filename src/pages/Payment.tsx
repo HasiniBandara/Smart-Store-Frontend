@@ -12,7 +12,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
     const navigate = useNavigate();
 
-    const saveOrder = async (status: string) => {
+    const saveOrder = async (status: string, transactionId?: string, paymentGateway?: string) => {
         try {
             const res = await fetch("http://localhost:3000/orders", {
                 method: "POST",
@@ -25,7 +25,9 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                         productId: item.id,
                         quantity: item.quantity,
                         price: item.price
-                    }))
+                    })),
+                    transactionId,
+                    paymentGateway
                 })
             });
             if (!res.ok) console.error("Failed to save order");
@@ -166,8 +168,8 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                                             })
                                         }
                                         onApprove={(_data, actions) =>
-                                            actions.order!.capture().then(async () => {
-                                                await saveOrder("paid");
+                                            actions.order!.capture().then(async (details) => {
+                                                await saveOrder("paid", details.id, "paypal");
                                                 alert("Payment successful 🎉");
                                                 setCart([]);
                                                 navigate("/orders");
