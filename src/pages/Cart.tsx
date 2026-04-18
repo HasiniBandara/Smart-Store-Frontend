@@ -14,7 +14,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   const [allOrders, setAllOrders] = useState<CartItem[][]>([]);
 
   // Last confirmed order from current session 
-  const [lastOrder, setLastOrder] = useState<CartItem[] | null>(null);
+  // const [lastOrder, setLastOrder] = useState<CartItem[] | null>(null);
 
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
     const savedOrders: CartItem[][] = JSON.parse(localStorage.getItem("orders") || "[]");
     if (savedOrders.length > 0) {
       setAllOrders(savedOrders);
-      setLastOrder(savedOrders[savedOrders.length - 1]);
+      // setLastOrder(savedOrders[savedOrders.length - 1]);
     }
   }, []);
 
@@ -61,14 +61,14 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
     navigate("/payment");
   };
 
-  const handleBuyAgain = () => {
-    if (lastOrder) {
-      setCart(lastOrder);
-    }
-  };
+  // const handleBuyAgain = () => {
+  //   if (lastOrder) {
+  //     setCart(lastOrder);
+  //   }
+  // };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const lastOrderTotal = lastOrder?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
+  // const lastOrderTotal = lastOrder?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
   const finalTotal = total;
 
@@ -93,6 +93,15 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
             <div className="bg-white p-10 rounded-xl text-center shadow-sm">
               <p className="mb-4 text-gray-500">Your basket is empty</p>
 
+
+              {allOrders.length > 0 && (
+                <button
+                  onClick={() => navigate("/orders")}
+                  className="w-fit bg-primary text-white px-4 py-3 rounded-full mt-6 hover:bg-primary"
+                >
+                  View Previous Order History
+                </button>
+              )}
               {/* {lastOrder && (
                 <div>
                   <p className="font-semibold mb-2">Last Order</p>
@@ -197,14 +206,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
           </button>
 
           {/* ORDER HISTORY */}
-          {allOrders.length > 0 && (
-            <button
-              onClick={() => navigate("/orders")}
-              className="w-full mt-4 text-sm text-primary"
-            >
-              View Order History
-            </button>
-          )}
+
         </div>
       </div>
     </div>
