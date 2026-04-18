@@ -1,5 +1,5 @@
 import type { CartItem } from "../App";
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
@@ -11,7 +11,7 @@ interface CartProps {
 
 const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   // All past orders
-  const [allOrders, setAllOrders] = useState<CartItem[][]>([]);
+  // const [allOrders, setAllOrders] = useState<CartItem[][]>([]);
 
   // Last confirmed order from current session 
   // const [lastOrder, setLastOrder] = useState<CartItem[] | null>(null);
@@ -19,13 +19,13 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   const navigate = useNavigate();
 
   // Load past orders from localStorage 
-  useEffect(() => {
-    const savedOrders: CartItem[][] = JSON.parse(localStorage.getItem("orders") || "[]");
-    if (savedOrders.length > 0) {
-      setAllOrders(savedOrders);
-      // setLastOrder(savedOrders[savedOrders.length - 1]);
-    }
-  }, []);
+  // useEffect(() => {
+  //   const savedOrders: CartItem[][] = JSON.parse(localStorage.getItem("orders") || "[]");
+  //   if (savedOrders.length > 0) {
+  //     setAllOrders(savedOrders);
+  //     // setLastOrder(savedOrders[savedOrders.length - 1]);
+  //   }
+  // }, []);
 
   const updateQuantity = (id: number, newQty: number) => {
     if (newQty < 0) return;
