@@ -3,36 +3,35 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CheckoutForm from "../components/CheckoutForm";
+import { saveOrderToBackend } from "../utils/api";
 
 const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
     const [method, setMethod] = useState("paypal");
     const [usdRate, setUsdRate] = useState<number | null>(null);
     const [rateLoading, setRateLoading] = useState(true);
     const [rateError, setRateError] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const navigate = useNavigate();
 
     const saveOrder = async (status: string, transactionId?: string, paymentGateway?: string) => {
         try {
-            const res = await fetch("http://localhost:3000/orders", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    userId: 1, // Hardcoded for now as per schema requirements
-                    totalPrice: totalLKR,
-                    status: status,
-                    cartItems: cart.map(item => ({
-                        productId: item.id,
-                        quantity: item.quantity,
-                        price: item.price
-                    })),
-                    transactionId,
-                    paymentGateway
-                })
+            await saveOrderToBackend({
+                totalPrice: totalLKR,
+                status: status,
+                cartItems: cart.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                transactionId,
+                paymentGateway
             });
-            if (!res.ok) console.error("Failed to save order");
-        } catch (e) {
+            return true;
+        } catch (e: any) {
             console.error("Error saving order:", e);
+            alert(e.message || "Failed to save order.");
+            return false;
         }
     };
 
@@ -67,7 +66,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
 
     return (
-        <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
+        <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans transition-opacity duration-500 opacity-100">
             <Navbar />
 
             {/* HEADER */}
@@ -96,8 +95,9 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
 
                     {/* CASH OPTION */}
                     <div
-                        onClick={() => setMethod("cash")}
-                        className={`border rounded-xl p-5 mb-4 cursor-pointer flex justify-between items-center
+                        onClick={() => !isProcessing && setMethod("cash")}
+                        className={`border rounded-xl p-5 mb-4 flex justify-between items-center
+                        ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                         ${method === "cash" ? "border-primary bg-red-50" : "bg-white"}`}
                     >
                         <div>
@@ -118,8 +118,9 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                         {["paypal", "stripe"].map((m) => (
                             <div
                                 key={m}
-                                onClick={() => setMethod(m)}
-                                className={`border rounded-xl p-4 cursor-pointer flex justify-between items-center
+                                onClick={() => !isProcessing && setMethod(m)}
+                                className={`border rounded-xl p-4 flex justify-between items-center
+                                ${isProcessing ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                                 ${method === m ? "border-primary bg-red-50" : "bg-white"}`}
                             >
                                 <span className="capitalize">
@@ -137,20 +138,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                         {method === "paypal" && totalLKR > 0 && (
                             <>
                                 <div className="text-sm text-gray-500 mb-3">
-                                    {rateLoading ? (
-                                        <span className="italic">Fetching exchange rate...</span>
-                                    ) : rateError ? (
-                                        <span className="text-amber-600">
-                                            ⚠ Using fallback rate · ≈ ${totalUSD.toFixed(2)} USD
-                                        </span>
-                                    ) : (
-                                        <span>
-                                            Pay <strong>${totalUSD.toFixed(2)} USD</strong>
-                                            <span className="ml-2 text-xs text-gray-400">
-                                                (live rate)
-                                            </span>
-                                        </span>
-                                    )}
+                                    <span className="italic">Processing in LKR...</span>
                                 </div>
 
                                 {!rateLoading && (
@@ -169,12 +157,17 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
                                         }
                                         onApprove={(_data, actions) =>
                                             actions.order!.capture().then(async (details) => {
-                                                await saveOrder("paid", details.id, "paypal");
-                                                alert("Payment successful 🎉");
-                                                setCart([]);
-                                                navigate("/orders");
+                                                setIsProcessing(true);
+                                                const saved = await saveOrder("paid", details.id, "paypal");
+                                                setIsProcessing(false);
+                                                if (saved) {
+                                                    alert("Payment successful 🎉");
+                                                    setCart([]);
+                                                    navigate("/orders");
+                                                }
                                             })
                                         }
+                                        disabled={isProcessing}
                                     />
                                 )}
                             </>

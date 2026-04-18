@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
@@ -29,15 +30,7 @@ function App() {
     });
   };
 
-
   const clearCart = () => setCart([]);
-
-  const confirmCart = () => {
-    if (cart.length === 0) {
-      alert("Your cart is empty!");
-      return;
-    }
-  };
 
   return (
     <Routes>
@@ -49,8 +42,7 @@ function App() {
           <Cart
             cart={cart}
             clearCart={clearCart}
-            confirmCart={confirmCart}
-            setCart={setCart}   // ✅ ADD THIS
+            setCart={setCart}
           />
         }
       />

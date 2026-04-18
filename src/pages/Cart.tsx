@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar";
 interface CartProps {
   cart: CartItem[];
   clearCart: () => void;
-  confirmCart: () => void;
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
 }
 
@@ -48,41 +47,18 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
       return;
     }
 
-    try {
-      // backend 
-      const reduceItems = cart.map((item) => ({
-        id: item.id,
-        quantity: item.quantity,
-      }));
+    // frontend display 
+    const orderItems = cart.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+    }));
 
-      // frontend display 
-      const orderItems = cart.map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-      }));
+    // Save order preview in localStorage (for use in Payment page or if they navigation back)
+    localStorage.setItem("pending_order", JSON.stringify(orderItems));
 
-      await fetch("http://localhost:3000/products/reduce-stock", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: reduceItems }),
-      });
-
-      // Save order in localStorage
-      const savedOrders: CartItem[][] = JSON.parse(localStorage.getItem("orders") || "[]");
-      savedOrders.push(orderItems);
-      localStorage.setItem("orders", JSON.stringify(savedOrders));
-
-      // Update UI
-      setAllOrders(savedOrders);
-      setLastOrder(orderItems);
-
-      navigate("/payment");
-    } catch (error) {
-      console.error("Error confirming order:", error);
-      alert("Failed to confirm order");
-    }
+    navigate("/payment");
   };
 
   const handleBuyAgain = () => {
@@ -94,8 +70,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const lastOrderTotal = lastOrder?.reduce((sum, item) => sum + item.price * item.quantity, 0) || 0;
 
-  const tax = total * 0.08;
-  const finalTotal = total + tax;
+  const finalTotal = total;
 
   return (
     <div className="bg-[#f6f2f3] min-h-screen px-8 md:px-16 py-10 font-sans">
@@ -118,7 +93,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
             <div className="bg-white p-10 rounded-xl text-center shadow-sm">
               <p className="mb-4 text-gray-500">Your basket is empty</p>
 
-              {lastOrder && (
+              {/* {lastOrder && (
                 <div>
                   <p className="font-semibold mb-2">Last Order</p>
                   <div className="space-y-1 mb-4">
@@ -140,7 +115,7 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
                     Buy Again
                   </button>
                 </div>
-              )}
+              )} */}
             </div>
           ) : (
             cart.map((item) => (
@@ -197,11 +172,6 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
             <div className="flex justify-between">
               <span>Shipping</span>
               <span>Free</span>
-            </div>
-
-            <div className="flex justify-between">
-              <span>Tax (8%)</span>
-              <span>Rs. {tax.toFixed(2)}</span>
             </div>
           </div>
 

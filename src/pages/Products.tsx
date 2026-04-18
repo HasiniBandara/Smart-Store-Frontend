@@ -18,6 +18,8 @@ interface ProductsProps {
   addToCart: (item: CartItem) => void;
 }
 
+import { API_BASE_URL } from "../utils/api";
+
 const Products = ({ addToCart }: ProductsProps) => {
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +30,7 @@ const Products = ({ addToCart }: ProductsProps) => {
   const { category } = useParams();
 
   useEffect(() => {
-    fetch("http://localhost:3000/products")
+    fetch(`${API_BASE_URL}/products`)
       .then((res) => res.json())
       .then((data) => {
         const formattedData = data.map((p: any) => ({
