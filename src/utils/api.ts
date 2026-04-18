@@ -42,7 +42,7 @@ export const decodeToken = (token: string) => {
 
 export const getUserIdFromToken = () => {
   const token = getAuthToken();
-  if (!token) throw new Error("No auth token found");
+  if (!token) throw new Error("Please login...");
 
   const decoded = decodeToken(token);
   return decoded?.id || decoded?.userId || decoded?.sub;
