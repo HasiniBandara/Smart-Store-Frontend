@@ -94,14 +94,14 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
               <p className="mb-4 text-gray-500">Your basket is empty</p>
 
 
-              {allOrders.length > 0 && (
-                <button
-                  onClick={() => navigate("/orders")}
-                  className="w-fit bg-primary text-white px-4 py-3 rounded-full mt-6 hover:bg-primary"
-                >
-                  View Previous Order History
-                </button>
-              )}
+              <button
+                onClick={() => navigate("/orders")}
+                className="w-fit bg-primary text-white px-4 py-3 rounded-full mt-6 hover:bg-primary"
+              >
+                View Previous Order History
+              </button>
+
+
               {/* {lastOrder && (
                 <div>
                   <p className="font-semibold mb-2">Last Order</p>
