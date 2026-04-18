@@ -1,6 +1,6 @@
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../utils/api";
+import axios from "axios"; import { useNavigate } from "react-router-dom";
 import { saveOrderToBackend } from "../utils/api";
 import { useState } from "react";
 
@@ -26,7 +26,7 @@ const CheckoutForm = ({ totalAmount, cart, setCart }: Props) => {
 
         setIsLoading(true);
         try {
-            const { data } = await axios.post("http://localhost:3000/payment", {
+            const { data } = await axios.post(`${API_BASE_URL}/payment`, {
                 amount: totalAmount,
             });
 
