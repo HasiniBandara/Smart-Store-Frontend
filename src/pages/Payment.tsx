@@ -9,7 +9,7 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
     const [method, setMethod] = useState("paypal");
     const [usdRate, setUsdRate] = useState<number | null>(null);
     const [rateLoading, setRateLoading] = useState(true);
-    const [rateError, setRateError] = useState(false);
+    // const [rateError, setRateError] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
     const navigate = useNavigate();
@@ -44,13 +44,13 @@ const Payment = ({ cart, setCart }: { cart: any[]; setCart: any }) => {
         const fetchRate = async () => {
             try {
                 setRateLoading(true);
-                setRateError(false);
+                // setRateError(false);
                 const res = await fetch("https://open.er-api.com/v6/latest/LKR");
                 const data = await res.json();
                 if (data?.rates?.USD) setUsdRate(data.rates.USD);
                 else throw new Error("Invalid rate data");
             } catch {
-                setRateError(true);
+                // setRateError(true);
                 setUsdRate(0.0031);
             } finally {
                 setRateLoading(false);
