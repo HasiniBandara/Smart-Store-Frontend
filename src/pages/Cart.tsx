@@ -178,10 +178,10 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
               <span>Rs. {total}</span>
             </div>
 
-            <div className="flex justify-between">
+            {/* <div className="flex justify-between">
               <span>Shipping</span>
               <span>Free</span>
-            </div>
+            </div> */}
           </div>
 
           <div className="border-t my-4" />
