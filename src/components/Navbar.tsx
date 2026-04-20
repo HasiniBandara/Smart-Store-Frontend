@@ -10,7 +10,7 @@ const Navbar = () => {
     <div className="flex justify-between items-center px-4 md:px-10 py-4 bg-[#f6f2f3] relative">
 
       {/* LOGO */}
-      <h1 className="text-2xl md:text-3xl font-bold text-primary tracking-wide">
+      <h1 className="text-2xl font-logo md:text-3xl font-bold text-primary tracking-wide">
         c & c
       </h1>
 
