@@ -78,8 +78,7 @@ const Products = ({ addToCart }: ProductsProps) => {
     products.forEach((product) => {
       const quantity = cartCount[product.id] || 0;
       if (quantity > 0) {
-        addToCart({ id: product.id, name: product.name, price: product.price, quantity });
-        hasItems = true;
+        addToCart({ id: product.id, name: product.name, price: product.price, quantity, image: product.image }); hasItems = true;
       }
     });
     if (hasItems) {

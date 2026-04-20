@@ -135,17 +135,25 @@ const Cart = ({ cart, clearCart, setCart }: CartProps) => {
                 {/* LEFT INFO */}
                 <div className="flex items-center gap-4">
 
-                  <div>
-                    <h3 className="font-semibold">{item.name}</h3>
-                    <p className="text-sm text-gray-500">
-                      Rs. {item.price}
-                    </p>
+                  <div className="flex items-center gap-4">
+                    {/* Product Image */}
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-16 h-16 rounded-xl object-cover"
+                      />
+                    )}
 
-                    {/* QUANTITY */}
-                    <div className="flex items-center gap-3 mt-2 bg-gray-100 px-3 py-1 rounded-full w-fit">
-                      <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                    <div>
+                      <h3 className="font-semibold">{item.name}</h3>
+                      <p className="text-sm text-gray-500">Rs. {item.price}</p>
+                      {/* QUANTITY */}
+                      <div className="flex items-center gap-3 mt-2 bg-gray-100 px-3 py-1 rounded-full w-fit">
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
+                        <span>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                      </div>
                     </div>
                   </div>
                 </div>
