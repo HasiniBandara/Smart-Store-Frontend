@@ -143,7 +143,7 @@ const Products = ({ addToCart }: ProductsProps) => {
                 <div className="flex justify-center items-center">
 
                   <img
-                    src={`${API_BASE_URL}${product.image}`}
+                    src={product.image}
                     alt={product.name}
                     className="h-60 rounded-xl"
                   />
